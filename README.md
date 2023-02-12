@@ -1,10 +1,10 @@
 # Andy Huynh
-## CPSC 362
-### 2023-02-11
+## CPSC 362 - Foundations of Software Engineering
+### 2023-02-11 (Spring Semester 2023)
 #### ahuynh86@csu.fullerton.edu
 ##### Snake Game Project
 
-- The name of the game is *EmagEkans*
+- The name of the game is "*EmagEkans*"
 - 1-player
 
 
