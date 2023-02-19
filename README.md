@@ -30,5 +30,5 @@ Game-Over conditions:
 - Colliding with the borders of the playzone.
 
 
-Game ruleset:
+Game restrictions:
 - When moving in a straight direction, can only turn left or right.
