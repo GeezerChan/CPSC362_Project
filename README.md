@@ -4,12 +4,12 @@
 #### ahuynh86@csu.fullerton.edu
 ##### Snake Game Project
 
-- The name of the game is "*EmagEkans*"
+- The name of the game is "*Snake*"
 - 1-player
 
 
 Project Goal:
-The goal of this project is to recreate the Snake game or making my own version of it.
+The goal of this project is to recreate my own version of the Snake game.
 The Snake game is a popular game that many people have recreated or made a version of their own. 
 Whether it's imperfect or imperfect, I will try my best to attempt what others have tried to attempt. 
 
