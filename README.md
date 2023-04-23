@@ -32,3 +32,8 @@ Game-Over conditions:
 
 Game restrictions:
 - When moving in a straight direction, can only turn left or right.
+
+Prep to run game:
+Game uses virtual environment so check the requirements.txt
+-Need to do: source env/bin/activate
+  This activates the virtual environment where pygame and videogame is installed.
