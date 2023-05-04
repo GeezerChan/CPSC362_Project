@@ -13,10 +13,9 @@
 
 import os
 import warnings
-
 import pygame
-
-from scene import PolygonTitleScene
+import scene
+#from scene import SnakeScene, PolygonTitleScene, SceneManager
 
 
 def display_info():
@@ -74,18 +73,8 @@ class MyVideoGame(VideoGame):
 
     def __init__(self):
         """Init the Pygame demo."""
-        super().__init__(window_title = 'Hello')
-
-        my_abs_path = os.path.abspath(__file__)
-        self._main_dir = os.path.split(my_abs_path)[0]
-
-        self._data_dir = os.path.join(self._main_dir, 'data')
-        soundtrack = os.path.join(self._data_dir,
-                                  'music-grid.wav')
-
-        pygame.mixer.music.load(soundtrack)
-        pygame.mixer.music.play(-1)
-
+        super().__init__(window_title = 'Snake')
+        self._scene_graph = scene.SceneManager()
         self.build_scene_graph()
 
         self._main_dir = None
@@ -95,16 +84,27 @@ class MyVideoGame(VideoGame):
 
     def build_scene_graph(self):
         """Build scene graph for the game demo."""
-        self._scene_graph = [PolygonTitleScene(self._screen, 'Snake Game')]
+        self._scene_graph.add(
+            [
+            scene.PolygonTitleScene(self._screen,
+                                    self._scene_graph,
+                                    'Snake Game'),
+            scene.SnakeScene(self._screen,
+                             self._scene_graph)
+            ]
+        )
+        self._scene_graph.set_next_scene('0')
 
     def run(self):
         """Run the game; the main game loop."""
         scene_iterator = iter(self.scene_graph)
+        current_scene = next(scene_iterator)
         while not self._game_is_over:
-            current_scene = next(scene_iterator)
             current_scene.start_scene()
             while current_scene.is_valid():
-                self._clock.tick(current_scene.frame_rate())
+                current_scene.delta_time = self._clock.tick(
+                    current_scene.frame_rate()
+                )
                 for event in pygame.event.get():
                     current_scene.process_event(event)
                 current_scene.update_scene()
@@ -112,6 +112,9 @@ class MyVideoGame(VideoGame):
                 current_scene.render_updates()
                 pygame.display.update()
             current_scene.end_scene()
-            self._game_is_over = True
+            try:
+                current_scene = next(scene_iterator)
+            except StopIteration:
+                self._game_is_over = True
         pygame.quit()
         return 0
