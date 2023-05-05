@@ -16,7 +16,7 @@ Whether it's imperfect or imperfect, I will try my best to attempt what other
 
 Game Objective:
 The objective of the Space Invaders game is to control a player character that moves in only the y-axis(left and right).
-As the enemy 'aliens' aproach from the top of the screen, fend them off my shooting them before they destroy you.
+As the enemy 'aliens' approach from the top of the screen, fend them off my shooting them before they destroy you.
 
 
 Game Win condition:
