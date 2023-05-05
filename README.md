@@ -1,39 +1,41 @@
-# Snake Game Project
+# Space Invaders Project
 ## CPSC 362 - Foundations of Software Engineering
 ### 2023-02-11 (Spring Semester 2023)
 #### ahuynh86@csu.fullerton.edu
 ##### Andy Huynh
 
-- The name of the game is "*Snake*"
+- The name of the game is "*Space Invaders*"
 - 1-player
 
 
 Project Goal:
-The goal of this project is to recreate my own version of the Snake game.
-The Snake game is a popular game that many people have recreated or made a version of their own. 
+The goal of this project is to recreate my own version of the Space Invaders game.
+The Space Invaders game is a popular game that many people have recreated or made a version of their own. 
 Whether it's imperfect or imperfect, I will try my best to attempt what others have tried to attempt. 
 
 
 Game Objective:
-The objective of the Snake game is to control a snake character that moves in only the x-axis and y-axis.
-Collecting the items that appear on the screen to progress and extend your snake character. while also 
-avoid running into the border of the playfield and avoid running into yourself. Winning by high score
-or completely filling out the play area.
+The objective of the Space Invaders game is to control a player character that moves in only the y-axis(left and right).
+As the enemy 'aliens' aproach from the top of the screen, fend them off my shooting them before they destroy you.
 
 
 Game Win condition:
-- Collecting all of the items and making your snake fill up the entire playboard.
-- Personal score to beat.
+- Shooting all of the 'aliens' until they are all wiped out.
 
 Game-Over conditions:
-- Colliding with yourself. When the head of the snake colldies with the body/tail.
-- Colliding with the borders of the playzone.
+- You run out of lives from getting shot at too much.
+- The 'aliens' reach too close to you.
 
 
 Game restrictions:
-- When moving in a straight direction, can only turn left or right.
+- Can only move left or right.
 
 Prep to run game:
-Game uses virtual environment so check the requirements.txt
--Need to do: source env/bin/activate
-  This activates the virtual environment where pygame and videogame is installed.
+Game uses pygame and videogame packages. Also uses a virtual environment so check the requirements.txt
+-To run a virtual environment in python:
+  -Creating virtual environment: python3 -e venv env
+  -Activate the virtual environment: source env/bin/activate
+  This activates the virtual environment where pygame and videogame can be installed.
+  -Install the requirements: pip install -r requirements.txt
+  OR  pip install pygame  then  pip install -e videogame
+  
