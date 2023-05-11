@@ -1,23 +1,31 @@
 # Andy Huynh
-# CPSC 362
+# CPSC 386-02
+# 2023-04-20
 # ahuynh86@csu.fullerton.edu
-# Project
+# @GeezerChan
+#
+# Lab 00-04
+#
+# M4: Invader
+#
 
 """Scene objects for making games with PyGame."""
-import os
+
+import random
 import pygame
+import assets
+import player
 import rgbcolors
-from random import randint, uniform
+import animation
 
 # If you're interested in using abstract base classes, feel free to rewrite
 # these classes.
 # For more information about Python Abstract Base classes, see
 # https://docs.python.org/3.8/library/abc.html
 
-def random_position(max_width, max_height):
-    return pygame.math.Vector2(randint(0, max_width-1), randint(0, max_height-1))
-
 class SceneManager:
+    """Class to manage multiple scenes"""
+
     def __init__(self):
         self._scene_dict = {}
         self._current_scene = None
@@ -28,10 +36,12 @@ class SceneManager:
         self._reloaded = True
 
     def set_next_scene(self, key):
+        """Sets next scene"""
         self._next_scene = self._scene_dict[key]
         self._reloaded = True
 
     def add(self, scene_list):
+        """Adds new scene to list"""
         for (index, scene) in enumerate(scene_list):
             self._scene_dict[str(index)] = scene
         self._current_scene = self._scene_dict['0']
@@ -45,6 +55,7 @@ class SceneManager:
             return self._next_scene
         else:
             raise StopIteration
+
 
 class Scene:
     """Base class for making PyGame Scenes."""
@@ -73,7 +84,7 @@ class Scene:
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
             print("Bye bye!")
             self._is_valid = False
-       
+
     def is_valid(self):
         """Is the scene valid? A valid scene can be used to play a scene."""
         return self._is_valid
@@ -92,6 +103,7 @@ class Scene:
                 pygame.mixer.music.set_volume(0.2)
             except pygame.error as pygame_error:
                 print("Cannot open the mixer?")
+                print('\n'.join(pygame_error.args))
                 raise SystemExit("broken!!") from pygame_error
             pygame.mixer.music.play(-1)
 
@@ -116,10 +128,12 @@ class PressAnyKeyToExitScene(Scene):
 
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
             self._is_valid = False
+        elif event.type == pygame.KEYDOWN:
+            self._is_valid = True
 
 
 class PolygonTitleScene(PressAnyKeyToExitScene):
-    """Scene with a title string and a polygon."""
+    """Main Menu Scene"""
 
     def __init__(
         self,
@@ -132,35 +146,46 @@ class PolygonTitleScene(PressAnyKeyToExitScene):
         soundtrack=None,
     ):
         """Initialize the scene."""
-        my_abs_path = os.path.abspath(__file__)
-        self._main_dir = os.path.split(my_abs_path)[0]
-
-        self._data_dir = os.path.join(self._main_dir, 'data')
-        soundtrack = os.path.join(self._data_dir,
-                                  'music-grid.wav')
-        super().__init__(screen, background_color, soundtrack)
-
+        super().__init__(screen, background_color, assets.get('music-grid'))
+        self._scene_manager = scene_manager
         title_font = pygame.font.SysFont(title, title_size)
         self._title = pygame.font.Font.render(title_font, title, True,
                                               title_color, background_color)
-        eighteen = pygame.font.SysFont(title, 18)
-        self._press_any_key = pygame.font.Font.render(eighteen, 'Press SPACE to continue.',
+        eighteen = pygame.font.SysFont(title, 20)
+        self._conditions = pygame.font.Font.render(eighteen,
+                                        'Win by: Shooting and getting rid of all aliens.',
                                                       True, 'Black', background_color)
-        self._press_esc_key = pygame.font.Font.render(eighteen, 'Press esc to exit.',
+        self._conditions1 = pygame.font.Font.render(eighteen,
+                                        'Lose by: Getting shot 3 times. OR aliens reach you.',
                                                       True, 'Black', background_color)
-        self._scene_manager = scene_manager
-
+        self._how_to_play = pygame.font.Font.render(eighteen, 'How to Play:',
+                                                      True, 'Black', background_color)
+        self._how_to_play1 = pygame.font.Font.render(eighteen,
+                                                     'Arrow keys: <-(move left), ->(move right)',
+                                                      True, 'Black', background_color)
+        self._how_to_play2 = pygame.font.Font.render(eighteen,
+                                                     'Spacebar to shoot',
+                                                      True, 'Black', background_color)
+        self._press_any_key = pygame.font.Font.render(eighteen, 'Press TAB to continue.',
+                                                      True, rgbcolors.dark_red, background_color)
+        self._press_esc_key = pygame.font.Font.render(eighteen, 'Press ESC any time to exit.',
+                                                      True, rgbcolors.dark_red, background_color)
 
     def draw(self):
         """Draw the scene."""
         super().draw()
         scene2 = self._screen
-        pygame.Surface.blit(scene2, self._title, ((800/2)-160, (800/2)-50))
-        pygame.Surface.blit(scene2, self._press_any_key, ((800/2)-90, 800-100))
-        pygame.Surface.blit(scene2, self._press_esc_key, ((800/2)-60, 800-50))
+        pygame.Surface.blit(scene2, self._title, ((800/2)-190, 200))
+        pygame.Surface.blit(scene2, self._conditions, (270, 350))
+        pygame.Surface.blit(scene2, self._conditions1, (260, 380))
+        pygame.Surface.blit(scene2, self._how_to_play, ((800/2)-40, 800-300))
+        pygame.Surface.blit(scene2, self._how_to_play1, ((800/2)-115, 800-275))
+        pygame.Surface.blit(scene2, self._how_to_play2, ((800/2)-55, 800-250))
+        pygame.Surface.blit(scene2, self._press_any_key, ((800/2)-62, 800-100))
+        pygame.Surface.blit(scene2, self._press_esc_key, ((800/2)-70, 800-50))
 
     def process_event(self, event):
-        if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_TAB:
             self._scene_manager.set_next_scene('1')
             self._is_valid = False
         else:
@@ -171,158 +196,270 @@ class PolygonTitleScene(PressAnyKeyToExitScene):
         self._is_valid = True
 
 
-class Snake:
-    speed = 0.5
-    def __init__(self, position, speed, radius, color, name="None"):
-        self._position = position
-        self._original_position = pygame.math.Vector2(position)
-        self._speed = speed
-        self._radius = radius
-        self._color = color
-        self._name = name
-
-    @property
-    def radius(self):
-        """Return the circle's radius"""
-        return self._radius
-
-    @property
-    def position(self):
-        """Return the circle's position."""
-        return self._position
-
-    @property
-    def original_position(self):
-        return self._original_position
-    
-    @property
-    def speed(self):
-        """Return the circle's speed."""
-        return self._speed
-    
-    def move_ip(self, x, y):
-        self._position = self._position + pygame.math.Vector2(x, y)
-
-    @property
-    def rect(self):
-        """Return bounding rect."""
-        left = self._position.x - self._radius
-        top = self._position.y - self._radius
-        width = 2 * self._radius
-        return pygame.Rect(left, top, width, width)
-    
-    @property
-    def height(self):
-        """Return the height of the bounding box the circle is in."""
-        return 2 * self._radius
-
-    @property
-    def width(self):
-        """Return the width of the bounding box the circle is in."""
-        return 2 * self._radius
-    
-    def draw(self, screen):
-        """Draw the Snake to screen."""
-        pygame.draw.circle(screen, self._color, self.position, self.radius)
-
-    
-class SnakeScene(PressAnyKeyToExitScene):
-    """Scene for Snake Game"""
+class GameOverScene(PressAnyKeyToExitScene):
+    """Game Over Scene"""
 
     def __init__(
-            self,
-            screen,
-            scene_manager,
-            background_color=rgbcolors.snow3,
-            soundtrack=None,
-        ):
-
+        self,
+        screen,
+        scene_manager,
+        title,
+        title_color=rgbcolors.dark_red,
+        title_size=72,
+        background_color=rgbcolors.indian_red,
+        soundtrack=None,
+    ):
         """Initialize the scene."""
-        my_abs_path = os.path.abspath(__file__)
-        self._main_dir = os.path.split(my_abs_path)[0]
-
-        self._data_dir = os.path.join(self._main_dir, 'data')
-        soundtrack = os.path.join(self._data_dir,
-                                  '8bp051-06-random-happy_ending_after_all.mp3')
-
-        super().__init__(screen, background_color, soundtrack)
+        super().__init__(screen, background_color, assets.get('music-grid.BJ'))
         self._scene_manager = scene_manager
-        self._snake = []
-        self.drawSnake()
-        self._next_key = '1'
-    
-    def drawSnake(self):
-        (width, height) = self._screen.get_size()
-        position = random_position(width-100, height-100)
-        # c = Snake(position, 0.5, 5, rgbcolors.salmon1, 1)
-        # self._snake.append(c)
-        # startx = random.randint(5, 800-6)
-        # starty = random.randint(5, 800-6)
-        # snakeCoords = [{'x': startx, 'y': starty},
-        #             {'x': startx - 1, 'y': starty},
-        #             {'x': startx - 2, 'y': starty}]
-        # for coord in snakeCoords:
-        #     x = coord['x'] * 800
-        #     y = coord['y'] * 800
-        c = Snake(position, 0.5, 25, rgbcolors.salmon1, 1)
-        self._snake.append(c)
-
-    def process_event(self, event):
-        direction = 'right'
-        if event.type == pygame.QUIT:
-            print("Good Bye!")
-            self._is_valid = False
-        elif event.type == pygame.KEYDOWN:
-            if (event.key == pygame.K_LEFT or event.key == pygame.K_a) \
-                and direction != 'right':
-                    direction = 'left'
-            elif (event.key == pygame.K_RIGHT or event.key == pygame.K_d) \
-                and direction != 'left':
-                    direction = 'right'
-            elif (event.key == pygame.K_UP or event.key == pygame.K_w) \
-                and direction != 'down':
-                    direction = 'up'
-            elif (event.key == pygame.K_DOWN or event.key == pygame.K_s) \
-                and direction != 'up':
-                    direction = 'down'
-            # elif (event.key == pygame.K_DOWN or event.key == pygame.K_SPACE):
-            #     self._snake = []
-            #     self.drawSnake()
-            elif event.key == pygame.K_ESCAPE:
-                self._is_valid = False
-        else:
-            super().process_event(event)
-
-        # move the snake by adding a segment in the direction it is moving
-        # if direction == 'up':
-        #     newHead = {'x': snakeCoords[0]['x'], 'y': snakeCoords[0]['y'] - 1}
-        # elif direction == 'down':
-        #     newHead = {'x': snakeCoords[0]['x'], 'y': snakeCoords[0]['y'] + 1}
-        # elif direction == 'left':
-        #     newHead = {'x': snakeCoords[0]['x'] - 1, 'y': snakeCoords[0]['y']}
-        # elif direction == 'right':
-        #     newHead = {'x': snakeCoords[0]['x'] + 1, 'y': snakeCoords[0]['y']}
-        # snakeCoords.insert(0, newHead)
-            
-
-    def update_scene(self):
-        super().update_scene()
-        
-
-    def render_updates(self):
-        if self._render_updates:
-            super().render_updates()
-            # if self._render_updates:
-            self._render_updates.clear(self._screen, self._background)
-            self._render_updates.update()
-            dirty = self._render_updates.draw(self._screen)
+        title_font = pygame.font.SysFont(title, title_size)
+        self._title = pygame.font.Font.render(title_font, title, True,
+                                              title_color, background_color)
+        eighteen = pygame.font.SysFont(title, 20)
+        twenty = pygame.font.SysFont(title, 50)
+        self._press_any_key = pygame.font.Font.render(eighteen, 'Press TAB to try again.',
+                                                      True, rgbcolors.dark_red, background_color)
+        self._press_esc_key = pygame.font.Font.render(eighteen, 'Press ESC any time to exit.',
+                                                      True, rgbcolors.dark_red, background_color)
+        self._you_lose = pygame.font.Font.render(twenty, 'You lose.',
+                                                      True, rgbcolors.dark_red, background_color)
 
     def draw(self):
         """Draw the scene."""
         super().draw()
-        for a in self._snake:
-            a.draw(self._screen)
-    
+        scene2 = self._screen
+        pygame.Surface.blit(scene2, self._title, ((800/2)-190, 200))
+        pygame.Surface.blit(scene2, self._you_lose, ((800/2)-70, 400))
+        pygame.Surface.blit(scene2, self._press_any_key, ((800/2)-62, 800-100))
+        pygame.Surface.blit(scene2, self._press_esc_key, ((800/2)-70, 800-50))
+
+    def process_event(self, event):
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_TAB:
+            self._scene_manager.set_next_scene('3')
+            self._is_valid = False
+        else:
+            super().process_event(event)
+
     def end_scene(self):
         super().end_scene()
         self._is_valid = True
+
+
+class GameOver2Scene(PressAnyKeyToExitScene):
+    """Game Over2 Scene"""
+
+    def __init__(
+        self,
+        screen,
+        scene_manager,
+        title,
+        title_color=rgbcolors.white,
+        title_size=72,
+        background_color=rgbcolors.black,
+        soundtrack=None,
+    ):
+        """Initialize the scene."""
+        super().__init__(screen, background_color, assets.get('goofy_ahh'))
+        self._scene_manager = scene_manager
+        title_font = pygame.font.SysFont(title, title_size)
+        self._title = pygame.font.Font.render(title_font, title, True,
+                                              title_color, background_color)
+        eighteen = pygame.font.SysFont(title, 20)
+        twenty = pygame.font.SysFont(title, 50)
+        self._press_esc_key = pygame.font.Font.render(eighteen, 'Press ESC any time to exit.',
+                                                      True, rgbcolors.dark_red, background_color)
+        self._you_lost = pygame.font.Font.render(twenty,
+                                                'This world is taken over by aliens.',
+                                                True, rgbcolors.dark_red, background_color)
+        self._you_lost2 = pygame.font.Font.render(twenty,
+                                                'No more coming back.',
+                                                True, rgbcolors.dark_red, background_color)
+
+    def draw(self):
+        """Draw the scene."""
+        super().draw()
+        scene2 = self._screen
+        pygame.Surface.blit(scene2, self._title, ((800/2)-190, 200))
+        pygame.Surface.blit(scene2, self._you_lost, ((800/2)-280, 400))
+        pygame.Surface.blit(scene2, self._you_lost2, ((800/2)-190, 450))
+        pygame.Surface.blit(scene2, self._press_esc_key, ((800/2)-70, 800-50))
+
+    def process_event(self, event):
+        super().process_event(event)
+
+    def end_scene(self):
+        super().end_scene()
+        self._is_valid = True
+
+
+class GameWinScene(PressAnyKeyToExitScene):
+    """Game Win Scene"""
+
+    def __init__(
+        self,
+        screen,
+        scene_manager,
+        title,
+        title_color=rgbcolors.blue3,
+        title_size=72,
+        background_color=rgbcolors.snow3,
+        soundtrack=None,
+    ):
+        """Initialize the scene."""
+        super().__init__(screen, background_color, assets.get('music-grid'))
+        self._scene_manager = scene_manager
+        title_font = pygame.font.SysFont(title, title_size)
+        self._title = pygame.font.Font.render(title_font, title, True,
+                                              title_color, background_color)
+        eighteen = pygame.font.SysFont(title, 20)
+        twenty = pygame.font.SysFont(title, 50)
+        self._press_esc_key = pygame.font.Font.render(eighteen, 'Press ESC any time to exit.',
+                                                      True, rgbcolors.dark_red, background_color)
+        self._you_won = pygame.font.Font.render(twenty,
+                                                'This world is protected from the aliens.',
+                                                True, rgbcolors.dark_red, background_color)
+        self._you_won2 = pygame.font.Font.render(twenty,
+                                                'You did it!',
+                                                True, rgbcolors.dark_red, background_color)
+
+    def draw(self):
+        """Draw the scene."""
+        super().draw()
+        scene2 = self._screen
+        pygame.Surface.blit(scene2, self._title, ((800/2)-190, 200))
+        pygame.Surface.blit(scene2, self._you_won, ((800/2)-280, 400))
+        pygame.Surface.blit(scene2, self._you_won2, ((800/2)-80, 450))
+        pygame.Surface.blit(scene2, self._press_esc_key, ((800/2)-70, 800-50))
+
+    def process_event(self, event):
+        super().process_event(event)
+
+    def end_scene(self):
+        super().end_scene()
+        self._is_valid = True
+
+
+class AlienScene(PressAnyKeyToExitScene):
+    """Scene for Alien Invasion"""
+
+    def __init__(self, screen, scene_manager):
+        super().__init__(screen, rgbcolors.black, assets.get('soundtrack'))
+        self._explosion_sound = pygame.mixer.Sound(assets.get('soundfx'))
+        self._scene_manager = scene_manager
+        self.delta_time = 0
+        self._aliens = []
+        self.make_aliens()
+        (width, height) = self._screen.get_size()
+        self._player = player.Player(pygame.math.Vector2(width//2, height - 100))
+        self._bullets = []
+        self._alien_bullets = []
+        self._render_updates = pygame.sprite.RenderUpdates()
+        animation.Explosion.containers = self._render_updates
+        eighteen = pygame.font.SysFont('title', 20)
+        self._press_esc_key = pygame.font.Font.render(eighteen, 'Press ESC any time to exit.',
+                                                      True, rgbcolors.dark_red, rgbcolors.black)
+
+    def make_aliens(self):
+        """Makes the alien models."""
+        alien_width = 40
+        alien_radius = alien_width // 2
+        buffer_between = alien_width // 4
+        (width, height) = (600, 250)
+        x_step = buffer_between + alien_width
+        y_step = buffer_between + alien_width
+        aliens_per_row = (width // x_step) - 1
+        num_rows = (height // y_step) - 1
+        self._aliens = [
+            player.Alien(
+                x_step + (j * x_step),
+                y_step + (i * y_step),
+                alien_radius,
+                rgbcolors.red,
+                f"{i+1}, {j+1}",
+            )
+            for i in range(num_rows)
+            for j in range(aliens_per_row)
+        ]
+
+    def update_scene(self):
+        super().update_scene()
+        self._player.update()
+        (width, height) = self._screen.get_size()
+        for move in self._aliens:
+            if move._center_x != width - 30:
+                move._center_y += .5
+            #elif move._center_x == width - 25:
+            #    move._center_x -= 1
+            #else:
+            #    move._center_y += 1
+            if move._center_y == 650:
+                self._scene_manager.set_next_scene('2')
+                self._is_valid = False
+
+        for bullet in self._bullets:
+            bullet.update(self.delta_time)
+            if bullet.should_die():
+                self._bullets.remove(bullet)
+            else:
+                index = bullet.rect.collidelist([c.rect for c in self._aliens])
+                if index > -1:
+                    animation.Explosion(self._aliens[index])
+                    self._aliens[index].is_exploding = True
+                    self._aliens.remove(self._aliens[index])
+                    self._explosion_sound.play()
+                    self._bullets.remove(bullet)
+                if not self._aliens:
+                    self._scene_manager.set_next_scene('4')
+                    self._is_valid = False
+
+        for alienbullet in self._alien_bullets:
+            alienbullet.update(self.delta_time)
+            if alienbullet.should_die():
+                self._alien_bullets.remove(alienbullet)
+                #if alienbullet.rect.collideobjects(): # If collides with player
+                #self._scene_manager.set_next_scene('2')
+                #self._is_valid = False
+
+        if random.randint(0,100) == random.randint(0,100):
+            (width, height) = self._screen.get_size()
+            rand_posi = random.randint(100, 700)
+            bullet_target = pygame.math.Vector2(rand_posi, height)
+            velocity = .2
+            self._alien_bullets.append(
+                player.AlienBullet(pygame.math.Vector2(rand_posi, 250),
+                                    bullet_target, velocity))
+
+    def process_event(self, event):
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+            (width, height) = self._screen.get_size()
+            bullet_target = self._player.position - pygame.math.Vector2(0, height)
+            velocity = 1
+            self._bullets.append(player.Bullet(self._player.position, bullet_target, velocity))
+        elif event.type == pygame.KEYDOWN and event.key == pygame.K_LEFT:
+            self._player.move_left()
+        elif event.type == pygame.KEYUP and event.key == pygame.K_LEFT:
+            self._player.stop()
+        elif event.type == pygame.KEYDOWN and event.key == pygame.K_RIGHT:
+            self._player.move_right()
+        elif event.type == pygame.KEYUP and event.key == pygame.K_RIGHT:
+            self._player.stop()
+        else:
+            super().process_event(event)
+
+    def render_updates(self):
+        super().render_updates()
+        self._render_updates.clear(self._screen, self._background)
+        self._render_updates.update()
+        dirty = self._render_updates.draw(self._screen)
+
+    def draw(self):
+        super().draw()
+        for aliens in self._aliens:
+            aliens.draw(self._screen)
+        for bullet in self._bullets:
+            bullet.draw(self._screen)
+        for alienbullets in self._alien_bullets:
+            alienbullets.draw(self._screen)
+        self._player.draw(self._screen)
+        scene2 = self._screen
+        pygame.Surface.blit(scene2, self._press_esc_key, ((800/2)-70, 800-50))

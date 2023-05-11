@@ -1,22 +1,20 @@
 # Andy Huynh
 # CPSC 386-02
-# 2023-02-20
+# 2023-04-20
 # ahuynh86@csu.fullerton.edu
 # @GeezerChan
 #
-# Lab 00-03
+# Lab 00-04
 #
-# M3: Scene
+# M4: Invader
 #
 
 """Game objects to create PyGame based games."""
 
-import os
 import warnings
+
 import pygame
 import scene
-#from scene import SnakeScene, PolygonTitleScene, SceneManager
-
 
 def display_info():
     """Print out information about the display driver and video information."""
@@ -73,7 +71,7 @@ class MyVideoGame(VideoGame):
 
     def __init__(self):
         """Init the Pygame demo."""
-        super().__init__(window_title = 'Snake')
+        super().__init__(window_title = 'Hello')
         self._scene_graph = scene.SceneManager()
         self.build_scene_graph()
 
@@ -88,9 +86,18 @@ class MyVideoGame(VideoGame):
             [
             scene.PolygonTitleScene(self._screen,
                                     self._scene_graph,
-                                    'Snake Game'),
-            scene.SnakeScene(self._screen,
-                             self._scene_graph)
+                                    'Space Invaders'),
+            scene.AlienScene(self._screen,
+                             self._scene_graph),
+            scene.GameOverScene(self._screen,
+                                self._scene_graph,
+                                'Game Over. T^T'),
+            scene.GameOver2Scene(self._screen,
+                                self._scene_graph,
+                                'World Overrun!'),
+            scene.GameWinScene(self._screen,
+                                self._scene_graph,
+                                'You have won!'),             
             ]
         )
         self._scene_graph.set_next_scene('0')
@@ -114,7 +121,7 @@ class MyVideoGame(VideoGame):
             current_scene.end_scene()
             try:
                 current_scene = next(scene_iterator)
-            except StopIteration:
+            except:
                 self._game_is_over = True
         pygame.quit()
         return 0

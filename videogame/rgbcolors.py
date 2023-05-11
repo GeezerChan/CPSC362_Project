@@ -1,14 +1,3 @@
-# Andy Huynh
-# CPSC 386-02
-# 2023-02-20
-# ahuynh86@csu.fullerton.edu
-# @GeezerChan
-#
-# Lab 00-03
-#
-# M3: Scene
-#
-
 """A list of RGB colors produced by X11's showrgb command. The color database
     is probably from an IRIX system circa 2005"""
 
@@ -53,7 +42,7 @@ def diff_color(color_a, color_b):
 
 
 def tuple_to_color(color_tuple):
-    "Given a tuple representing a color, return a Pygame color contructed from that tuple."
+    """Given a tuple representing a color, return a Pygame color contructed from that tuple."""
     return Color(*color_tuple)
 
 
