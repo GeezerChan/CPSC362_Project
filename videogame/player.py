@@ -1,14 +1,36 @@
 """Player objects for the scenes."""
 
 import math
+from random import randint
 import pygame
 import rgbcolors
+import assets
 
-class Player:
+
+# Taken from the pygame examples
+def load_image(filename, colorkey=None, scale=1):
+    image = pygame.image.load(filename)
+    image = image.convert()
+
+    size = image.get_size()
+    size = (size[0] * scale, size[1] * scale)
+    image = pygame.transform.scale(image, size)
+
+    if colorkey is not None:
+        if colorkey == -1:
+            colorkey = image.get_at((0, 0))
+        image.set_colorkey(colorkey, pygame.RLEACCEL)
+    return image, image.get_rect()
+
+
+class Player(pygame.sprite.Sprite):
     """Class representing player with a bounding rect."""
 
     def __init__(self, position):
+        pygame.sprite.Sprite.__init__(self)
+        self.image, self.rect = load_image(assets.get('dragon'), -1)
         self._position = position
+        self.rect.center = self._position
         self._radius = 25
         self._color = rgbcolors.purple2
         self._velocity = pygame.math.Vector2(0, 0)
@@ -18,6 +40,7 @@ class Player:
         newv = self._position.x + self._velocity.x
         if newv > 0 and newv < 800:
             self._position += self._velocity
+        self.rect.center = self._position
 
     @property
     def position(self):
@@ -60,19 +83,21 @@ class Bullet:
 
     def should_die(self):
         """If bullet should disappear"""
-        squared_distance = (self._position - self._target_position).length_squared()
+        squared_distance = (self._position -
+                            self._target_position).length_squared()
         return math.isclose(squared_distance, 0.0, rel_tol=1e-01)
 
     def update(self, delta_time):
         """Updates bullet postion"""
-        self._position.move_towards_ip(self._target_position, self._speed * delta_time)
+        self._position.move_towards_ip(self._target_position,
+                                       self._speed * delta_time)
 
     def draw(self, screen):
         """Draw the circle to screen."""
         pygame.draw.circle(screen, self._color, self._position, self._radius)
 
 
-class Alien:
+class Alien(pygame.sprite.Sprite):
     """Class representing an alien ship with a bounding rect."""
 
     def __init__(self, center_x, center_y, radius, color, name="None"):
@@ -136,7 +161,7 @@ class AlienBullet:
         self._position = pygame.math.Vector2(position)
         self._target_position = pygame.math.Vector2(target_position)
         self._speed = speed
-        self._color = rgbcolors.mult_color(self._speed, rgbcolors.violet_red)
+        self._color = rgbcolors.mult_color(self._speed, rgbcolors.red)
         self._radius = 10
 
     @property
@@ -149,13 +174,44 @@ class AlienBullet:
 
     def should_die(self):
         """If bullet should disappear"""
-        squared_distance = (self._position - self._target_position).length_squared()
+        squared_distance = (self._position -
+                            self._target_position).length_squared()
         return math.isclose(squared_distance, 0.0, rel_tol=1e-01)
 
     def update(self, delta_time):
         """Update alien bullet position"""
-        self._position.move_towards_ip(self._target_position, self._speed * delta_time)
+        self._position.move_towards_ip(self._target_position,
+                                       self._speed * delta_time)
 
     def draw(self, screen):
         """Draw the circle to screen."""
         pygame.draw.circle(screen, self._color, self._position, self._radius)
+
+
+class Shield:
+    """Class representing player with a bounding rect."""
+
+    def __init__(self, position):
+        self._position = position
+        self._radius = 25
+        self._color = rgbcolors.purple2
+        self._velocity = pygame.math.Vector2(0, 0)
+
+    @property
+    def radius(self):
+        """Return the circle's radius"""
+        return self._radius
+
+    @property
+    def position(self):
+        """Returns position"""
+        return self._position
+
+    def draw(self, screen):
+        """Draw the Player to screen."""
+        pygame.draw.rect(screen, self._color,
+                         pygame.Rect(200, 600, 50, 25))
+        pygame.draw.rect(screen, self._color,
+                         pygame.Rect(375, 600, 50, 25))
+        pygame.draw.rect(screen, self._color,
+                         pygame.Rect(550, 600, 50, 25))

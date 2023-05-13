@@ -1,12 +1,10 @@
 # Andy Huynh
-# CPSC 386-02
+# CPSC 362
 # 2023-04-20
 # ahuynh86@csu.fullerton.edu
 # @GeezerChan
 #
-# Lab 00-04
-#
-# M4: Invader
+# Project
 #
 
 """Game objects to create PyGame based games."""

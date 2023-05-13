@@ -1,12 +1,10 @@
 # Andy Huynh
-# CPSC 386-02
+# CPSC 362
 # 2023-04-20
 # ahuynh86@csu.fullerton.edu
 # @GeezerChan
 #
-# Lab 00-04
-#
-# M4: Invader
+# Project
 #
 
 """Scene objects for making games with PyGame."""
@@ -22,6 +20,7 @@ import animation
 # these classes.
 # For more information about Python Abstract Base classes, see
 # https://docs.python.org/3.8/library/abc.html
+
 
 class SceneManager:
     """Class to manage multiple scenes"""
@@ -154,18 +153,18 @@ class PolygonTitleScene(PressAnyKeyToExitScene):
         eighteen = pygame.font.SysFont(title, 20)
         self._conditions = pygame.font.Font.render(eighteen,
                                         'Win by: Shooting and getting rid of all aliens.',
-                                                      True, 'Black', background_color)
+                                                   True, 'Black', background_color)
         self._conditions1 = pygame.font.Font.render(eighteen,
-                                        'Lose by: Getting shot 3 times. OR aliens reach you.',
-                                                      True, 'Black', background_color)
+                                        'Lose by: Getting shot 1 time(s). OR aliens reach you.',
+                                                    True, 'Black', background_color)
         self._how_to_play = pygame.font.Font.render(eighteen, 'How to Play:',
-                                                      True, 'Black', background_color)
+                                                    True, 'Black', background_color)
         self._how_to_play1 = pygame.font.Font.render(eighteen,
                                                      'Arrow keys: <-(move left), ->(move right)',
-                                                      True, 'Black', background_color)
+                                                     True, 'Black', background_color)
         self._how_to_play2 = pygame.font.Font.render(eighteen,
                                                      'Spacebar to shoot',
-                                                      True, 'Black', background_color)
+                                                     True, 'Black', background_color)
         self._press_any_key = pygame.font.Font.render(eighteen, 'Press TAB to continue.',
                                                       True, rgbcolors.dark_red, background_color)
         self._press_esc_key = pygame.font.Font.render(eighteen, 'Press ESC any time to exit.',
@@ -218,11 +217,13 @@ class GameOverScene(PressAnyKeyToExitScene):
         eighteen = pygame.font.SysFont(title, 20)
         twenty = pygame.font.SysFont(title, 50)
         self._press_any_key = pygame.font.Font.render(eighteen, 'Press TAB to try again.',
-                                                      True, rgbcolors.dark_red, background_color)
+                                                      True, rgbcolors.dark_red,
+                                                      background_color)
         self._press_esc_key = pygame.font.Font.render(eighteen, 'Press ESC any time to exit.',
-                                                      True, rgbcolors.dark_red, background_color)
+                                                      True, rgbcolors.dark_red,
+                                                      background_color)
         self._you_lose = pygame.font.Font.render(twenty, 'You lose.',
-                                                      True, rgbcolors.dark_red, background_color)
+                                                 True, rgbcolors.dark_red, background_color)
 
     def draw(self):
         """Draw the scene."""
@@ -266,14 +267,17 @@ class GameOver2Scene(PressAnyKeyToExitScene):
                                               title_color, background_color)
         eighteen = pygame.font.SysFont(title, 20)
         twenty = pygame.font.SysFont(title, 50)
-        self._press_esc_key = pygame.font.Font.render(eighteen, 'Press ESC any time to exit.',
-                                                      True, rgbcolors.dark_red, background_color)
+        self._press_esc_key = pygame.font.Font.render(eighteen,
+                                                      'Press ESC any time to exit.',
+                                                      True, rgbcolors.dark_red,
+                                                      background_color)
         self._you_lost = pygame.font.Font.render(twenty,
-                                                'This world is taken over by aliens.',
-                                                True, rgbcolors.dark_red, background_color)
+                                                 'This world is taken over by aliens.',
+                                                 True, rgbcolors.dark_red, background_color)
         self._you_lost2 = pygame.font.Font.render(twenty,
-                                                'No more coming back.',
-                                                True, rgbcolors.dark_red, background_color)
+                                                  'No more coming back.',
+                                                  True, rgbcolors.dark_red,
+                                                  background_color)
 
     def draw(self):
         """Draw the scene."""
@@ -319,8 +323,8 @@ class GameWinScene(PressAnyKeyToExitScene):
                                                 'This world is protected from the aliens.',
                                                 True, rgbcolors.dark_red, background_color)
         self._you_won2 = pygame.font.Font.render(twenty,
-                                                'You did it!',
-                                                True, rgbcolors.dark_red, background_color)
+                                                 'You did it!',
+                                                 True, rgbcolors.dark_red, background_color)
 
     def draw(self):
         """Draw the scene."""
@@ -341,9 +345,11 @@ class GameWinScene(PressAnyKeyToExitScene):
 
 class AlienScene(PressAnyKeyToExitScene):
     """Scene for Alien Invasion"""
+    spriteson = True
+    score = 0
 
     def __init__(self, screen, scene_manager):
-        super().__init__(screen, rgbcolors.black, assets.get('soundtrack'))
+        super().__init__(screen, rgbcolors.snow3, assets.get('soundtrack'))
         self._explosion_sound = pygame.mixer.Sound(assets.get('soundfx'))
         self._scene_manager = scene_manager
         self.delta_time = 0
@@ -353,11 +359,27 @@ class AlienScene(PressAnyKeyToExitScene):
         self._player = player.Player(pygame.math.Vector2(width//2, height - 100))
         self._bullets = []
         self._alien_bullets = []
+        self._shield = player.Shield((600,100))
         self._render_updates = pygame.sprite.RenderUpdates()
         animation.Explosion.containers = self._render_updates
         eighteen = pygame.font.SysFont('title', 20)
+        eighteen2 = pygame.font.SysFont('title', 40)
         self._press_esc_key = pygame.font.Font.render(eighteen, 'Press ESC any time to exit.',
-                                                      True, rgbcolors.dark_red, rgbcolors.black)
+                                                      True, rgbcolors.dark_red,
+                                                      rgbcolors.snow3)
+        self._score = pygame.font.Font.render(eighteen2, 'Score:',
+                                              True, rgbcolors.wheat4, rgbcolors.snow3)
+        self._score_amt = pygame.font.Font.render(eighteen2, str(AlienScene.score),
+                                                  True, rgbcolors.wheat4, rgbcolors.snow3)
+        self._lives = pygame.font.Font.render(eighteen2, 'Lives: ',
+                                              True, rgbcolors.wheat4, rgbcolors.snow3)
+        self._lives_amt = pygame.font.Font.render(eighteen2, '1',
+                                              True, rgbcolors.wheat4, rgbcolors.snow3)
+        if AlienScene.spriteson:
+            self._render_updates = pygame.sprite.RenderUpdates(self._player)
+            player.Player.containers = self._render_updates
+        else:
+            self._render_updates = None
 
     def make_aliens(self):
         """Makes the alien models."""
@@ -385,17 +407,6 @@ class AlienScene(PressAnyKeyToExitScene):
         super().update_scene()
         self._player.update()
         (width, height) = self._screen.get_size()
-        for move in self._aliens:
-            if move._center_x != width - 30:
-                move._center_y += .5
-            #elif move._center_x == width - 25:
-            #    move._center_x -= 1
-            #else:
-            #    move._center_y += 1
-            if move._center_y == 650:
-                self._scene_manager.set_next_scene('2')
-                self._is_valid = False
-
         for bullet in self._bullets:
             bullet.update(self.delta_time)
             if bullet.should_die():
@@ -403,12 +414,15 @@ class AlienScene(PressAnyKeyToExitScene):
             else:
                 index = bullet.rect.collidelist([c.rect for c in self._aliens])
                 if index > -1:
+                    AlienScene.score += 10
                     animation.Explosion(self._aliens[index])
                     self._aliens[index].is_exploding = True
                     self._aliens.remove(self._aliens[index])
                     self._explosion_sound.play()
                     self._bullets.remove(bullet)
                 if not self._aliens:
+                    # AlienScene.make_aliens(self)
+                    # If want to make multiple invasions
                     self._scene_manager.set_next_scene('4')
                     self._is_valid = False
 
@@ -416,25 +430,40 @@ class AlienScene(PressAnyKeyToExitScene):
             alienbullet.update(self.delta_time)
             if alienbullet.should_die():
                 self._alien_bullets.remove(alienbullet)
-                #if alienbullet.rect.collideobjects(): # If collides with player
-                #self._scene_manager.set_next_scene('2')
-                #self._is_valid = False
+            if self._player.rect.colliderect(alienbullet):
+                self._scene_manager.set_next_scene('2')
+                self._is_valid = False
 
-        if random.randint(0,100) == random.randint(0,100):
-            (width, height) = self._screen.get_size()
-            rand_posi = random.randint(100, 700)
-            bullet_target = pygame.math.Vector2(rand_posi, height)
-            velocity = .2
-            self._alien_bullets.append(
-                player.AlienBullet(pygame.math.Vector2(rand_posi, 250),
-                                    bullet_target, velocity))
+        for move in self._aliens:
+            move._center_y += .25
+            if move._center_y < 280:
+                for all in self._aliens:
+                    all._center_x += .01
+            elif move._center_y >= 250 and move._center_y < 480:
+                for all in self._aliens:
+                    all._center_x -= .01
+            else:
+                for all in self._aliens:
+                    all._center_x += .01
+            if move._center_y == 650:
+                self._scene_manager.set_next_scene('2')
+                self._is_valid = False
+            if random.randint(0, 4000) == random.randint(0, 4000):
+                (width, height) = self._screen.get_size()
+                rand_posi = random.randint(int(move._center_x), int(move._center_x))
+                bullet_target = pygame.math.Vector2(rand_posi, height)
+                velocity = .2
+                self._alien_bullets.append(
+                    player.AlienBullet(pygame.math.Vector2(rand_posi,
+                                        int(move._center_y)), bullet_target, velocity))
 
     def process_event(self, event):
         if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
             (width, height) = self._screen.get_size()
             bullet_target = self._player.position - pygame.math.Vector2(0, height)
             velocity = 1
-            self._bullets.append(player.Bullet(self._player.position, bullet_target, velocity))
+            self._bullets.append(player.Bullet(self._player.position,
+                                                bullet_target, velocity))
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_LEFT:
             self._player.move_left()
         elif event.type == pygame.KEYUP and event.key == pygame.K_LEFT:
@@ -454,12 +483,17 @@ class AlienScene(PressAnyKeyToExitScene):
 
     def draw(self):
         super().draw()
-        for aliens in self._aliens:
-            aliens.draw(self._screen)
-        for bullet in self._bullets:
-            bullet.draw(self._screen)
-        for alienbullets in self._alien_bullets:
-            alienbullets.draw(self._screen)
-        self._player.draw(self._screen)
         scene2 = self._screen
+        for aliens in self._aliens:
+            aliens.draw(scene2)
+        for bullet in self._bullets:
+            bullet.draw(scene2)
+        for alienbullets in self._alien_bullets:
+            alienbullets.draw(scene2)
+        self._shield.draw(scene2)
+        self._player.draw(scene2)
         pygame.Surface.blit(scene2, self._press_esc_key, ((800/2)-70, 800-50))
+        pygame.Surface.blit(scene2, self._score, (50, 10))
+        pygame.Surface.blit(scene2, self._score_amt, (200, 10))
+        pygame.Surface.blit(scene2, self._lives, (600, 10))
+        pygame.Surface.blit(scene2, self._lives_amt, (700, 10))

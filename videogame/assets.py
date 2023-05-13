@@ -11,7 +11,12 @@ asset_dict = {
     'music-grid.BJ': 'music-grid.BJ.wav',
     'goofy_ahh': 'goofy_ahh.mp3',
     'soundfx': 'meow.mp3',
+    'sun1': 'sun1.bmp',
+    'cat': 'cat.png',
+    'dragon': 'Dragon.png',
+    'fire': 'Fueguito_magia_copia.png'
 }
+
 
 def get(key):
     """Gets needed sound from asset_dict"""
