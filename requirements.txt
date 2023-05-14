@@ -1,0 +1,5 @@
+altgraph==0.17.3
+pygame==2.4.0
+pyinstaller==5.10.1
+pyinstaller-hooks-contrib==2023.3
+-e git+https://github.com/GeezerChan/CPSC362_Project.git@40da6d5615052be91c784abc0d6eec27075b946e#egg=videogame&subdirectory=videogame
