@@ -33,9 +33,10 @@ Game restrictions:
 Prep to run game:
 Game uses pygame and videogame packages. Also uses a virtual environment so check the requirements.txt
 -To run a virtual environment in python:
-  -Creating virtual environment: python3 -m venv env
-  -Activate the virtual environment: source env/bin/activate
+-Creating virtual environment: python3 -m venv env
+-Activate the virtual environment: source env/bin/activate
   This activates the virtual environment where pygame and videogame can be installed.
-  -Install the requirements: pip install -r requirements.txt
-  OR  pip install pygame  then  pip install -e videogame
+-Install the requirements: pip install -r requirements.txt
+  OR
+-pip install pygame  then  pip install -e videogame
   
